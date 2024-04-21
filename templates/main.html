@@ -85,7 +85,7 @@
                 margin-right: 10px;
             }
 
-            input[type="submit"], input[type="button"], .copy-button, .paste-button, .download-button {
+            input[type="submit"], input[type="button"] {
                 background: linear-gradient(to right, #92afd7, #f0c7ab);
                 color: white;
                 padding: 15px 40px;
@@ -97,6 +97,11 @@
                 transition: all 0.3s ease;
                 border: 1px solid transparent;
                 text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
+            }
+
+            #input-container {
+                position: relative;
+                margin-bottom: 20px;
             }
 
             .copy-button {
@@ -111,6 +116,20 @@
                 position: absolute;
                 bottom: 1;
                 right: 0;
+            }
+
+            .paste-button {
+                background: none;
+                color: #92afd7;
+                border: 1px solid #92afd7;
+                padding: 8px 20px;
+                border-radius: 20px;
+                cursor: pointer;
+                font-size: 14px;
+                transition: all 0.3s ease;
+                position: absolute;
+                bottom: 3em;
+                right: 2em;
             }
 
             .download-button {
@@ -270,6 +289,16 @@
                 }
                 textarea {
                     width: calc(100% - 30px);
+                    padding: 12px;
+                    margin-bottom: 20px;
+                    border: none;
+                    border-radius: 20px;
+                    font-size: 16px;
+                    background-color: rgba(240, 240, 240, 0.9);
+                    color: #333;
+                    transition: background-color 0.3s ease;
+                    resize: none;
+                    min-height: 150px;
                 }
                 .file-label {
                     padding: 10px 20px;
@@ -290,8 +319,10 @@
         <div id="container">
             <h1>AI Summarizer Tool</h1>
             <form id="form" action="/output" method="post">
-                <textarea id="input-textarea" name="paragraf" placeholder="Enter the text you want to summarize"></textarea>
-                <br>
+                <div id="input-container">
+                    <textarea id="input-textarea" name="paragraf" placeholder="Enter the text you want to summarize"></textarea>
+                    <button class="paste-button button"><i class="fas fa-paste"></i> Paste</button>
+                </div>
                 <label for="file-upload" class="file-label">
                     <i class="fas fa-upload file-upload-icon"></i> Choose File
                 </label>
@@ -300,7 +331,6 @@
                 <div class="button-container">
                     <input type="submit" value="Summarize" class="button">
                     <input type="button" class="clear-button button" value="Clear">
-                    <button class="paste-button button"><i class="fas fa-paste"></i> Paste</button>
                 </div>
                 <div id="error" class="error-message" style="display: none;"></div>
             </form>
@@ -315,7 +345,6 @@
                 </div>
                 <p>Loading...</p>
             </div>
-            
             <div id="file-info">
                 <i class="fas fa-info-circle"></i> You have not uploaded any file yet.
             </div>
