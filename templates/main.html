@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Summarizer Tool</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+        <style>
+            body {
+                background: radial-gradient(circle, #9baec8, #536976, #292e49);
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                margin: 0;
+                padding: 0;
+                color: #333;
+            }
+
+            #container {
+                width: 80%;
+                margin: 50px auto;
+                background-color: rgba(255, 255, 255, 0.8);
+                border-radius: 10px;
+                box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+                padding: 30px;
+                text-align: center;
+            }
+
+            h1 {
+                color: #333;
+                font-weight: bold;
+                margin-bottom: 30px;
+                text-transform: uppercase;
+                letter-spacing: 2px;
+            }
+
+            form {
+                margin-top: 20px;
+            }
+
+            textarea {
+                width: calc(100% - 40px);
+                padding: 12px;
+                margin-bottom: 20px;
+                border: none;
+                border-radius: 20px;
+                font-size: 16px;
+                background-color: rgba(240, 240, 240, 0.9);
+                color: #333;
+                transition: background-color 0.3s ease;
+                resize: none; /* Fixed size */
+                min-height: 150px;
+            }
+
+            textarea:focus {
+                background-color: rgba(220, 220, 220, 0.9);
+            }
+
+            .file-upload {
+                display: none;
+            }
+
+            .file-label {
+                background-color: #546e7a;
+                color: white;
+                padding: 12px 30px;
+                border: none;
+                border-radius: 25px;
+                cursor: pointer;
+                font-size: 16px;
+                transition: background-color 0.3s ease;
+                display: inline-block;
+                margin-bottom: 20px;
+            }
+
+            .file-label:hover {
+                background-color: #40545c;
+            }
+
+            .file-label:focus {
+                outline: none;
+            }
+
+            .file-upload-icon {
+                font-size: 24px;
+                color: #fff;
+                margin-right: 10px;
+            }
+
+            input[type="submit"], input[type="button"], .copy-button, .paste-button, .download-button {
+                background: linear-gradient(to right, #92afd7, #f0c7ab);
+                color: white;
+                padding: 15px 40px;
+                border: none;
+                border-radius: 25px;
+                cursor: pointer;
+                font-size: 18px;
+                font-weight: bold;
+                transition: all 0.3s ease;
+                border: 1px solid transparent;
+                text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
+            }
+
+            .copy-button {
+                background: none;
+                color: #92afd7;
+                border: 1px solid #92afd7;
+                padding: 8px 20px;
+                border-radius: 20px;
+                cursor: pointer;
+                font-size: 14px;
+                transition: all 0.3s ease;
+                position: absolute;
+                bottom: 1;
+                right: 0;
+            }
+
+            .download-button {
+                background: none;
+                color: #92afd7;
+                border: 1px solid #92afd7;
+                padding: 8px 20px;
+                border-radius: 20px;
+                cursor: pointer;
+                font-size: 14px;
+                transition: all 0.3s ease;
+                position: absolute;
+                bottom: 1;
+                right: 7em;
+            }
+
+            input[type="submit"]:hover, input[type="button"]:hover, .copy-button:hover, .paste-button:hover, .download-button:hover {
+                background: linear-gradient(to right, #92afd7, #f0c7ab);
+                color: #fff;
+                border: 1px solid #f8f8f8;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+                text-shadow: none;
+            }
+
+            input[type="submit"]:focus, input[type="button"]:focus, .copy-button:focus, .paste-button:focus, .download-button:focus {
+                outline: none;
+            }
+
+            #file-info {
+                font-size: 14px;
+                color: #666;
+                margin-top: 20px;
+            }
+
+            #file-info i {
+                margin-right: 5px;
+            }
+            /* Loading animation styles */
+            .lds-line {
+                display: inline-block;
+                position: relative;
+                width: 80px;
+                height: 4px;
+            }
+            .lds-line div {
+                position: absolute;
+                height: 100%;
+                width: 20%;
+                background: linear-gradient(to right, #9baec8, #536976, #292e49);
+                animation: lds-line-animation 1.2s infinite ease-in-out;
+            }
+            .lds-line div:nth-child(1) {
+                left: 0;
+            }
+            .lds-line div:nth-child(2) {
+                left: 20%;
+                animation-delay: 0.2s;
+            }
+            .lds-line div:nth-child(3) {
+                left: 40%;
+                animation-delay: 0.4s;
+            }
+            .lds-line div:nth-child(4) {
+                left: 60%;
+                animation-delay: 0.6s;
+            }
+            .lds-line div:nth-child(5) {
+                left: 80%;
+                animation-delay: 0.8s;
+            }
+            @keyframes lds-line-animation {
+                0% {
+                    transform: scaleX(0);
+                }
+                50% {
+                    transform: scaleX(1);
+                }
+                100% {
+                    transform: scaleX(0);
+                }
+            }
+            #loading-animation p {
+                margin-top: 10px;
+                color: #9baec8; /* Adjusted text color to match the gradient */
+            }
+            #output {
+                display: block;
+                background-color: #fff;
+                padding: 20px;
+                border-radius: 20px;
+                margin-top: 20px;
+                text-align: left;
+                position: relative;
+            }
+            .output-section {
+                display: none;
+            }
+            .output-section.active {
+                display: block;
+            }
+            #toggle-summary-type {
+                background: none;
+                color: #92afd7;
+                border: 1px solid #92afd7;
+                padding: 8px 20px;
+                border-radius: 20px;
+                cursor: pointer;
+                font-size: 14px;
+                transition: all 0.3s ease;
+            }
+            #toggle-summary-type:hover {
+                background: #92afd7;
+                color: #fff;
+            }
+            #toggle-summary-type:focus {
+                outline: none;
+            }
+
+            .clear-button {
+                background: #e57373;
+                color: white;
+                padding: 8px 20px;
+                border: none;
+                border-radius: 20px;
+                cursor: pointer;
+                font-size: 14px;
+                transition: all 0.3s ease;
+            }
+
+            .clear-button:hover {
+                background: #ef5350;
+            }
+
+            .clear-button:focus {
+                outline: none;
+            }
+
+            .error-message {
+                color: #e57373;
+                font-size: 14px;
+                margin-top: 10px;
+            }
+
+            .button-container {
+                display: flex;
+                justify-content: center;
+                margin-top: 20px;
+            }
+
+            .button-container .button {
+                margin: 0 10px;
+            }
+
+            @media screen and (max-width: 768px) {
+                #container {
+                    width: 90%;
+                }
+                textarea {
+                    width: calc(100% - 30px);
+                }
+                .file-label {
+                    padding: 10px 20px;
+                    font-size: 14px;
+                }
+                input[type="submit"], input[type="button"] {
+                    padding: 12px 30px;
+                    font-size: 16px;
+                }
+                #toggle-summary-type {
+                    padding: 6px 15px;
+                    font-size: 12px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div id="container">
+            <h1>AI Summarizer Tool</h1>
+            <form id="form" action="/output" method="post">
+                <textarea id="input-textarea" name="paragraf" placeholder="Enter the text you want to summarize"></textarea>
+                <br>
+                <label for="file-upload" class="file-label">
+                    <i class="fas fa-upload file-upload-icon"></i> Choose File
+                </label>
+                <input id="file-upload" class="file-upload" name="upload" type="file" accept=".txt, .text, .xml, .pdf, .docx">
+                <br>
+                <div class="button-container">
+                    <input type="submit" value="Summarize" class="button">
+                    <input type="button" class="clear-button button" value="Clear">
+                    <button class="paste-button button"><i class="fas fa-paste"></i> Paste</button>
+                </div>
+                <div id="error" class="error-message" style="display: none;"></div>
+            </form>
+            <br>
+            <div id="loading-animation" style="display: none;">
+                <div class="lds-line">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+                <p>Loading...</p>
+            </div>
+            
+            <div id="file-info">
+                <i class="fas fa-info-circle"></i> You have not uploaded any file yet.
+            </div>
+            <div id="output">
+                <div id="summary-output" class="output-section active">
+                    <h3>Summary Output (Abstractive)</h3>
+                    <p id="output-abstractive"></p>
+                    <div class="button-container">
+                        <button class="copy-button button"><i class="far fa-copy"></i> Copy</button>
+                        <button class="download-button button"><i class="fas fa-download"></i> Download</button>
+                    </div>
+                </div>
+                <div id="extractive-output" class="output-section">
+                    <h3>Summary Output (Extractive)</h3>
+                    <p id="output-extractive"></p>
+                    <div class="button-container">
+                        <button class="copy-button button"><i class="far fa-copy"></i> Copy</button>
+                        <button class="download-button button"><i class="fas fa-download"></i> Download</button>
+                    </div>
+                </div>
+                <button id="toggle-summary-type">Abstractive</button>
+            </div>
+        </div>
+        <script>
+            document.getElementById('file-upload').addEventListener('change', function() {
+                var file = this.files[0];
+                var reader = new FileReader();
+                reader.onload = function(event) {
+                    document.getElementById('input-textarea').value = event.target.result;
+                };
+                reader.readAsText(file);
+                var fileName = file.name;
+                document.getElementById('file-info').innerHTML = '<i class="fas fa-file-alt"></i> File uploaded: ' + fileName;
+            });
+
+            document.getElementById('form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                var file = document.getElementById('file-upload').files[0];
+                if (document.getElementById('input-textarea').value.trim() === '' && file === undefined) {
+                    document.getElementById('error').style.display = 'block';
+                    document.getElementById('error').innerText = 'Please input the text or upload a file.';
+                    return;
+                }
+                // Show loading animation
+                document.getElementById('loading-animation').style.display = 'block';
+
+                var formData = new FormData(this);
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', '/output', true);
+                xhr.onload = function() {
+                    if (xhr.status === 200) {
+                        var response = JSON.parse(xhr.responseText);
+                        document.getElementById('output-abstractive').innerText = response.output_abstractive;
+                        document.getElementById('output-extractive').innerText = response.output_extractive;
+                        document.getElementById('output').style.display = 'block';
+                        // Hide loading animation
+                        document.getElementById('loading-animation').style.display = 'none';
+
+                        // Check if textarea has value and hide "You have not uploaded any file yet." text
+                        if (document.getElementById('form').elements['paragraf'].value !== '' || file !== undefined) {
+                            document.getElementById('file-info').style.display = 'none';
+                        }
+                    }
+                };
+                xhr.send(formData);
+            });
+
+            // Toggle Summary Type
+            document.getElementById('toggle-summary-type').addEventListener('click', function() {
+                var sections = document.getElementsByClassName('output-section');
+                for (var i = 0; i < sections.length; i++) {
+                    sections[i].classList.toggle('active');
+                }
+                var buttonText = this.innerText;
+                if (buttonText === "Abstractive") {
+                    this.innerText = "Extractive";
+                } else {
+                    this.innerText = "Abstractive";
+                }
+            });
+
+            // Clear Text
+            document.querySelector('.clear-button').addEventListener('click', function() {
+                window.location.reload();
+            });
+
+            // Copy Text
+            document.querySelectorAll('.copy-button').forEach(item => {
+                item.addEventListener('click', function() {
+                    var text = this.parentElement.parentElement.querySelector('p').innerText;
+                    navigator.clipboard.writeText(text).then(function() {
+                        console.log('Text copied to clipboard');
+                    }, function(err) {
+                        console.error('Error in copying text: ', err);
+                    });
+                });
+            });
+
+            // Paste Text
+            document.querySelector('.paste-button').addEventListener('click', function() {
+                navigator.clipboard.readText().then(
+                    clipText => document.getElementById('input-textarea').value = clipText);
+            });
+
+            // Download Text
+            document.querySelectorAll('.download-button').forEach(item => {
+                item.addEventListener('click', function() {
+                    var text = this.parentElement.parentElement.querySelector('p').innerText;
+                    var filename = "summary.txt";
+                    var element = document.createElement('a');
+                    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+                    element.setAttribute('download', filename);
+                    element.style.display = 'none';
+                    document.body.appendChild(element);
+                    element.click();
+                    document.body.removeChild(element);
+                });
+            });
+        </script>
+    </body>
+</html>
